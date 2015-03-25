@@ -1,0 +1,71 @@
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.grid_search import GridSearchCV
+from scipy.stats import mode
+
+
+df = pd.read_csv('../../Documents/Titanic/train.csv', header=0)
+df_test = pd.read_csv('../../Documents/Titanic/test.csv', header=0)
+
+df = df.drop(['Name', 'Ticket', 'Cabin'], axis=1)
+df_test = df_test.drop(['Name', 'Ticket', 'Cabin'], axis=1)
+
+mean_age = df['Age'].mean()
+df['Age'] = df['Age'].fillna(mean_age)
+df_test['Age'] = df_test['Age'].fillna(mean_age)
+
+mode_embarked = mode(df['Embarked'])[0][0]
+df['Embarked'] = df['Embarked'].fillna(mode_embarked)
+df_test['Embarked'] = df_test['Embarked'].fillna(mode_embarked)
+
+df = pd.concat([df, pd.get_dummies(df['Embarked'], prefix='Embarked')], axis=1)
+df_test = pd.concat([df_test, pd.get_dummies(df_test['Embarked'], prefix='Embarked')], axis=1)
+
+fare_means = df.pivot_table('Fare', index='Pclass', aggfunc='mean')
+df_test['Fare'] = df_test[['Fare', 'Pclass']].apply(lambda x:
+                            fare_means[x['Pclass']] if pd.isnull(x['Fare'])
+                            else x['Fare'], axis=1)
+
+df['Gender'] = df['Sex'].map({'female': 0, 'male': 1}).astype(int)
+df_test['Gender'] = df_test['Sex'].map({'female': 0, 'male': 1}).astype(int)
+
+'''
+df['Port'] = df['Embarked'].map({'C': 1, 'S': 2, 'Q': 3}).astype(int)
+df_test['Port'] = df_test['Embarked'].map({'C': 1, 'S': 2, 'Q': 3})
+'''
+
+df = df.drop(['Sex', 'Embarked'], axis=1)
+df_test = df_test.drop(['Sex', 'Embarked'], axis=1)
+
+cols = df.columns.tolist()
+cols = [cols[1]] + cols[0:1] + cols[2:]
+df = df[cols]
+
+train_data = df.values
+test_data = df_test.values
+
+parameter_grid = {
+    'max_features': [0.5, 1.],
+    'max_depth': [5., None]
+}
+
+
+grid_search = GridSearchCV(RandomForestClassifier(n_estimators=100), parameter_grid, cv=5, verbose=3)
+grid_search = grid_search.fit(train_data[0:,2:],train_data[0:,0])
+#print grid_search.grid_scores_
+#print
+sorted(grid_search.grid_scores_, key=lambda x: x.mean_validation_score)
+#print grid_search.best_score_
+#print
+#print grid_search.best_params_
+
+model = RandomForestClassifier(n_estimators = 100, max_features=grid_search.best_params_['max_features'], max_depth=grid_search.best_params_['max_depth'])
+model = model.fit(train_data[0:,2:],train_data[0:,0])
+
+output = model.predict(test_data[:,1:])
+
+result = np.c_[test_data[:,0].astype(int), output.astype(int)]
+df_result = pd.DataFrame(result[:,0:2], columns=['PassengerId', 'Survived'])
+
+df_result.to_csv('../../Documents/Titanic/titanic_1-3.csv', index=False)
