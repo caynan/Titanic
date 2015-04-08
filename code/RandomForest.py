@@ -70,7 +70,7 @@ for training_set, test_set in cv:
 
     #This is used to specify the parameters we are trying to optimize using grid search. We are reviewing the number
     #of features considered at each step a branch is made: 50% or 100% of features and the maximum number of
-    #branches: 5 levels of no limit.
+    #branches: 5 levels or no limit.
     parameter_grid = {
     'max_features': [0.5, 1.],
     'max_depth': [5., None]
