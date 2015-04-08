@@ -54,6 +54,7 @@ as an example.
 '''
 #print df.head(5)
 
+columns = list(df.columns.values)
 
 #This assigns survived column to y and the rest to X
 X = train_data[:, 2:]
@@ -62,6 +63,7 @@ y = train_data[:, 0]
 #Provides train/test indices to split data in train test sets. Split dataset into k consecutive folds (In this case 10 folds)
 cv = KFold(n=len(train_data), n_folds=10)
 ave_prediction = []
+counter = 1
 for training_set, test_set in cv:
     X_train = X[training_set]
     y_train = y[training_set]
@@ -96,10 +98,20 @@ for training_set, test_set in cv:
     #print grid_search.best_params_
 
     #We use the result from the grid search (best params and max depth of search) to train a Random Forest model
-    model = RandomForestClassifier(n_estimators=100, max_features=grid_search.best_params_['max_features'], max_depth=grid_search.best_params_['max_depth'])
+    model = RandomForestClassifier(n_estimators=100, criterion='entropy', \
+                                   max_features=grid_search.best_params_['max_features'], \
+                                   max_depth=grid_search.best_params_['max_depth'])
 
     #Fit the training data
     model.fit(X_train, y_train)
+
+
+    important_features = []
+    for x,i in enumerate(model.feature_importances_):
+        if i>np.average(model.feature_importances_):
+            important_features.append(columns[x+2])
+    print 'Most important features for fold ' + str(counter) + ':',', '.join(important_features)
+    counter += 1
 
     #Use this to predict the outcome of the test data
     y_prediction = model.predict(X_test)
@@ -119,31 +131,24 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
     """
     Generate a simple plot of the test and training learning curve.
-
     Parameters
     ----------
     estimator : object type that implements the "fit" and "predict" methods
         An object of that type which is cloned for each validation.
-
     title : string
         Title for the chart.
-
     X : array-like, shape (n_samples, n_features)
         Training vector, where n_samples is the number of samples and
         n_features is the number of features.
-
     y : array-like, shape (n_samples) or (n_samples, n_features), optional
         Target relative to X for classification or regression;
         None for unsupervised learning.
-
     ylim : tuple, shape (ymin, ymax), optional
         Defines minimum and maximum yvalues plotted.
-
     cv : integer, cross-validation generator, optional
         If an integer is passed, it is the number of folds (defaults to 3).
         Specific cross-validation objects can be passed, see
         sklearn.cross_validation module for the list of possible objects
-
     n_jobs : integer, optional
         Number of jobs to run in parallel.
     """
