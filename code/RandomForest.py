@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.cross_validation import KFold
 
 #This path should be changed to whatever path is on your machine to train.csv
-df = pd.read_csv('../../Documents/Titanic/train.csv', header=0)
+df = pd.read_csv('../data/train.csv', header=0)
 
 #We drop these attributes as we feel they have very little importance to our model
 df = df.drop(['Name', 'Ticket', 'Cabin'], axis=1)
