@@ -22,3 +22,4 @@ To run the scripts, please follow this steps:
 * [Patsy](http://patsy.readthedocs.org/en/latest/)
 * [Matplotlib](http://matplotlib.org/)
 
+Please if you have any trouble running this code, feel free to contact the members of the group.
