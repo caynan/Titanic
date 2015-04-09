@@ -1,16 +1,9 @@
 This is the README file for the RandomForest.py code.
 The first thing to check before running this code is to make sure you have the proper Python libraries installed.
-The libraries are listed below:
+The requirements.txt file in the main folder shows all the libraries that need to be installed.
 
-pandas
-numpy
-sklearn
-scipy
-matplotlib
-
-One change needs to be made to the code: you need to change the path to train.csv to match where you put it on your computer.
-I commented the first line stating this. If you simply put the csv file in the same directory as the RandomForest code,
-you can run the code without changing the path (this is the easiest option).
+One thing to point out: if for any reason you put the train.csv file in any other location, you will need to change the path
+to train.csv to match where you put it. I commented the first line stating this.
 
 There are several points in the code where I have commented out code. I put the code there as a way for you to see the actual
 action of some of the algorithms and the output (such as grid search), but did not want it to be in there by default. If you
@@ -20,3 +13,9 @@ At about 60-70 seconds, the average prediction score will be displayed, and at a
 be displayed. I have put in a piece of code that will print out the most important features for each fold (most important
 features are defined here as being higher than average). This is to show progress within the program as well as I believe it is
 pretty interesting to see what is being considered as the important features for each fold.
+
+Run the code by navigating to the code folder from a command prompt and simple enter:
+python RandomForest.py
+python support_vector_machine.py
+
+If the libraries are installed, the programs should execute without problem.
