@@ -1,3 +1,6 @@
+If using pip to install (recommended), the library name to use in 'pip install <library>' is noted in parentheses following the
+name if it is different from the common name
+
 numpy
 scipy
 pyzmq
@@ -11,7 +14,7 @@ patsy
 pyparsing
 python-dateutil
 pytz
-scikit-learn
+scikit-learn    (sklearn)
 six
 tornado
 wsgiref
